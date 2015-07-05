@@ -1,10 +1,19 @@
 var serve = require('koa-static');
 var koa = require('koa');
+var fs = require('fs');
 var app = koa();
 
-// or use absolute paths
-app.use(serve('public'));
+// temporary disabled static-serving
+//app.use(serve('public')); // absolute paths
+
+app.use(function* (next) {
+  if (this.path === '/') {
+    this.type = 'text/html; charset=utf-8'
+    this.body = fs.createReadStream('public/index.html');
+  }
+  
+  // koa will automatically handle errors and leaks
+})
+
 
 app.listen(3000);
-
-console.log('listening on port 3000');
