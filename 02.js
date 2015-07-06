@@ -1,19 +1,26 @@
-var serve = require('koa-static');
 var koa = require('koa');
 var fs = require('fs');
 var app = koa();
 
-// temporary disabled static-serving
-//app.use(serve('public')); // absolute paths
-
 app.use(function* (next) {
   if (this.path === '/') {
-    this.type = 'text/html; charset=utf-8'
-    this.body = fs.createReadStream('public/index.html');
+    try {      
+      this.type = 'text/html; charset=utf-8';
+      this.body = fs.createReadStream('public/index.html');
+      
+      yield next;
+    } catch (err) {
+      
+      this.status = 404;
+      this.body = '404 - page not found';
+      this.app.emit('error', err, this);
+    }
   }
-  
-  // koa will automatically handle errors and leaks
-})
-
+  else {
+    this.status = 404;
+    this.type = 'text/plain; charset=utf-8';
+    this.body = '404 - page not found';
+  }
+});
 
 app.listen(3000);
