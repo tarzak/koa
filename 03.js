@@ -1,8 +1,11 @@
-var express    = require('express')
-var fs = require('fs');
-var path = require('path');
-var app = express();
-var stream = fs.createWriteStream('public/file.txt');
+var express    = require('express'),
+    fs = require('fs')
+    path = require('path'),
+    app = express(),
+    file = 'public/file.txt',
+    readStream  = fs.createReadStream(file),
+    writeStream = fs.createWriteStream(file),
+    pipe        = require('pipe-io');
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/index.html'), function (err) {
@@ -23,7 +26,10 @@ app.get('/file', function (req, res) {
 })
 
 app.put('/file/:contents', function (req, res) {
-  stream.write(req.params.contents);
+  //stream.write(req.params.contents);
+  pipe([readStream, writeStream], function(error) {
+    console.log(error || 'done');
+  });
 });
 
 app.listen(3000);
