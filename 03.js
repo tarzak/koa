@@ -3,8 +3,6 @@ var express    = require('express'),
     path = require('path'),
     app = express(),
     file = 'public/file.txt',
-    readStream  = fs.createReadStream(file),
-    writeStream = fs.createWriteStream(file),
     pipe        = require('pipe-io');
 
 app.get('/', function(req, res) {
@@ -17,8 +15,7 @@ app.get('/', function(req, res) {
       console.log('Sent');
       res.status(200);
     }
-  });
-  
+  });  
 });
 
 app.get('/file', function (req, res) {
@@ -26,6 +23,9 @@ app.get('/file', function (req, res) {
 })
 
 app.put('/file/:contents', function (req, res) {
+  var readStream  = fs.createReadStream(file),
+      writeStream = fs.createWriteStream(req.params.contents);
+  
   //stream.write(req.params.contents);
   pipe([readStream, writeStream], function(error) {
     console.log(error || 'done');
