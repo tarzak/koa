@@ -2,7 +2,7 @@ var express    = require('express'),
     fs = require('fs')
     path = require('path'),
     app = express(),
-    file = 'public/file.txt',
+    //file = 'public/file.txt',
     pipe        = require('pipe-io');
 
 app.get('/', function(req, res) {
@@ -19,17 +19,21 @@ app.get('/', function(req, res) {
 });
 
 app.get('/file', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public/file.txt'));
+  //res.sendFile(path.join(__dirname, 'public/file.txt'));
+  var file = new fs.ReadStream('public/file.txt');
+  sendFile(file, res);
 })
 
+function sendFile(file, res) {
+  file.pipe(res);
+}
+
 app.put('/file/:contents', function (req, res) {
-  var readStream  = fs.createReadStream(file),
-      writeStream = fs.createWriteStream(req.params.contents);
-  
-  //stream.write(req.params.contents);
-  pipe([readStream, writeStream], function(error) {
-    console.log(error || 'done');
-  });
+  var file = new fs.WriteStream('public/file.txt');
+  file.write(req.params.contents);
 });
+function writeFile(file, req) {
+  file.pipe(req);
+}
 
 app.listen(3000);
