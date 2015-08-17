@@ -1,11 +1,9 @@
 var express    = require('express'),
-    fs = require('fs')
+    fs   = require('fs'),
     path = require('path'),
-    app = express(),
+    app  = express(),
     file = 'public/file.txt',
-    readStream  = fs.createReadStream(file),
-    writeStream = fs.createWriteStream(file),
-    pipe        = require('pipe-io');
+    pipe = require('pipe-io');
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/index.html'), function (err) {
@@ -22,14 +20,19 @@ app.get('/', function(req, res) {
 });
 
 app.get('/file', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public/file.txt'));
+  //res.sendFile(path.join(__dirname, file));
+  var readStream = fs.createReadStream(file);
+  readStream.on('open', function () {
+    // This just pipes the read stream to the response object (which goes to the client)
+    readStream.pipe(res);
+  });
 })
 
-app.put('/file/:contents', function (req, res) {
-  //stream.write(req.params.contents);
-  pipe([readStream, writeStream], function(error) {
-    console.log(error || 'done');
-  });
+app.put('/file', function (req, res) {
+  req.pipe(fs.createWriteStream(file, {flags: 'r+'}));
+  req.on('end', console.log.bind(console, 'done'));
+  res.end()
+
 });
 
 app.listen(3000);
