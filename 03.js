@@ -21,7 +21,11 @@ app.get('/', function(req, res) {
 
 app.get('/file', function (req, res) {
   var readStream = fs.createReadStream(file);
-  readStream.on('open', function () {
+  readStream
+    .on('error', function(e) {
+      console.log('problem with request: ' + e.message);
+  })
+    .on('open', function () {
     // This just pipes the read stream to the response object (which goes to the client)
     readStream.pipe(res);
   });
@@ -29,9 +33,13 @@ app.get('/file', function (req, res) {
 
 app.put('/file', function (req, res) {
   req.pipe(fs.createWriteStream(file, {'flags': 'a'}));
-  req.on('end', console.log.bind(console, 'done'));
+  req
+    .on('error', function(e) {
+      console.log('problem with request: ' + e.message);
+  })
+    .on('end', console.log.bind(console, 'done'));
   res.end()
-
 });
-console.log('Server is listeting 3000 port. Enjoy :).')
+
+console.log('Server is listening 3000 port. Enjoy :).')
 app.listen(3000);
