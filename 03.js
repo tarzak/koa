@@ -6,36 +6,34 @@ var express    = require('express'),
     pipe = require('pipe-io');
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/index.html'), function (err) {
-    if (err) {
-      console.log(err);
-      res.status(err.status).end();
-    }
-    else {
-      console.log('Sent');
-      res.status(200);
-    }
+  var readStream = fs.createReadStream('public/index.html');
+  pipe([readStream, res], function (error) {
+    console.log(error || 'sent');
+    if (error)
+      res.status(error.status).end();
+    else
+      res.status(200).end();
   });
-  
 });
 
 app.get('/file', function (req, res) {
   var readStream = fs.createReadStream(file);
-  readStream
-    .on('error', function(e) {
-      console.log('problem with request: ' + e.message);
-  })
-    .on('open', function () {
-    // This just pipes the read stream to the response object (which goes to the client)
-    readStream.pipe(res);
+  pipe([readStream, res], function (error) {
+    console.log(error || 'done');
+    if (error)
+      res.status(error.status).end();
+    else
+      res.status(200).end();
   });
 });
 
 app.put('/file', function (req, res) {
   pipe([req, fs.createWriteStream(file, {'flags': 'a'})], function (error) {
-    console.log(error || 'done')
-    if (!error)
-      res.end();
+    console.log(error || 'done');
+    if (error)
+      res.status(error.status).end();
+    else
+      res.status(200).end();
   });
 });
 
