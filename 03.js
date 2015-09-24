@@ -29,16 +29,14 @@ app.get('/file', function (req, res) {
     // This just pipes the read stream to the response object (which goes to the client)
     readStream.pipe(res);
   });
-})
+});
 
 app.put('/file', function (req, res) {
-  req.pipe(fs.createWriteStream(file, {'flags': 'a'}));
-  req
-    .on('error', function(e) {
-      console.log('problem with request: ' + e.message);
-  })
-    .on('end', console.log.bind(console, 'done'));
-  res.end()
+  pipe([req, fs.createWriteStream(file, {'flags': 'a'})], function (error) {
+    console.log(error || 'done')
+    if (!error)
+      res.end();
+  });
 });
 
 console.log('Server is listening 3000 port. Enjoy :).')
