@@ -18,6 +18,8 @@ app.put('/file', function (req, res) {
   pipe([req, fs.createWriteStream(filePath, {'flags': 'a'})], function (error) {
     if (error)
       res.status(500).send(error.message).end();
+    else
+      res.send('success')
   });
 });
 
