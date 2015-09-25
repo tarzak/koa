@@ -12,7 +12,7 @@ app.get('/', function(req, res) {
     if (error)
       res.status(error.status).end();
     else
-      res.status(200).end();
+      res.end();
   });
 });
 
@@ -23,7 +23,7 @@ app.get('/file', function (req, res) {
     if (error)
       res.status(error.status).end();
     else
-      res.status(200).end();
+      res.end();
   });
 });
 
@@ -33,7 +33,7 @@ app.put('/file', function (req, res) {
     if (error)
       res.status(error.status).end();
     else
-      res.status(200).end();
+      res.end();
   });
 });
 
