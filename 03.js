@@ -27,7 +27,7 @@ function sendFileWithPipe(filePath, responseStream) {
   var readStream = fs.createReadStream(filePath);
   pipe([readStream, responseStream], function (error) {
     if (error)
-      responseStream.send(error.message);
+      responseStream.status(500).send(error.message);
   });
 }
 
