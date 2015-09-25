@@ -17,7 +17,7 @@ app.get('/file', function (req, res) {
 app.put('/file', function (req, res) {
   pipe([req, fs.createWriteStream(filePath, {'flags': 'a'})], function (error) {
     if (error)
-      res.status(500).send(error.message).end();
+      res.status(500).send(error.message);
     else
       res.send('success')
   });
@@ -27,7 +27,7 @@ function sendFileWithPipe(filePath, responseStream) {
   var readStream = fs.createReadStream(filePath);
   pipe([readStream, responseStream], function (error) {
     if (error)
-      responseStream.send(error.message).end();
+      responseStream.send(error.message);
   });
 }
 
