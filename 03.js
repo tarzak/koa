@@ -15,11 +15,9 @@ app.get('/file', function (req, res) {
 });
 
 app.put('/file', function (req, res) {
-  pipe([req, fs.createWriteStream(file, {'flags': 'a'})], function (error) {
+  pipe([req, fs.createWriteStream(filePath, {'flags': 'a'})], function (error) {
     if (error)
-      res.status(500).end();
-    else
-      res.end();
+      res.send(error.message).end();
   });
 });
 
